@@ -5,16 +5,17 @@ export interface Room {
   priceTaxPercentage: number;
   image: string;
 }
-
-export const GET_ROOMS_SUCCESS = "GET_ROOMS_SUCCESS";
+export interface RoomState {
+  rooms: Room[];
+  availableRooms: Room[];
+}
 
 export interface GetRoomsSuccessAction {
-  type: typeof GET_ROOMS_SUCCESS;
+  type: typeof GET_ROOMS_SUCCESS | typeof SET_AVAILABLE_ROOMS;
   payload: Room[];
 }
 
-export type RoomActionTypes = GetRoomsSuccessAction;
+export const GET_ROOMS_SUCCESS = "GET_ROOMS_SUCCESS";
+export const SET_AVAILABLE_ROOMS = "SET_AVAILABLE_ROOMS";
 
-export interface RoomState {
-  rooms: Room[];
-}
+export type RoomActionTypes = GetRoomsSuccessAction;

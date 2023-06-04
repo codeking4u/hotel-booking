@@ -2,6 +2,7 @@ import {
   RoomActionTypes,
   RoomState,
   GET_ROOMS_SUCCESS,
+  SET_AVAILABLE_ROOMS,
 } from "../types/roomTypes";
 
 const initialState: RoomState = {
@@ -29,6 +30,7 @@ const initialState: RoomState = {
       image: "https://via.placeholder.com/400x200.png?text=Expensive%20room",
     },
   ],
+  availableRooms: [],
 };
 
 const roomReducer = (
@@ -41,6 +43,12 @@ const roomReducer = (
         ...state,
         rooms: action.payload,
       };
+    case SET_AVAILABLE_ROOMS:
+      return {
+        ...state,
+        availableRooms: action.payload,
+      };
+
     default:
       return state;
   }

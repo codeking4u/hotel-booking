@@ -1,20 +1,26 @@
-import React, { useState, useEffect } from "react";
-import { RootState } from "../../store";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-
+import { RootState } from "../../store";
+import {
+  setStartDate,
+  setEndDate,
+} from "../../store/actions/searchFormActions";
 import { fetchBookings } from "../../store/actions/bookingActions";
 import { Booking } from "../../store/types/bookingTypes";
 import { Room } from "../../store/types/roomTypes";
 import { getRooms } from "../../services/roomService";
-interface SearchFormProps {
-  onSearch: (startDate: string, endDate: string) => void;
-}
+import { setAvailableRooms } from "../../store/actions/roomActions";
+import { useNavigate } from "react-router-dom";
 
 const SearchForm = () => {
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
   const dispatch = useDispatch();
+  const startDate = useSelector(
+    (state: RootState) => state.searchForm.startDate
+  );
+  const endDate = useSelector((state: RootState) => state.searchForm.endDate);
   const bookings = useSelector((state: RootState) => state.bookings.bookings);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Fetch the bookings data when the component mounts
@@ -24,11 +30,11 @@ const SearchForm = () => {
   const handleStartDateChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    setStartDate(event.target.value);
+    dispatch(setStartDate(event.target.value));
   };
 
   const handleEndDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setEndDate(event.target.value);
+    dispatch(setEndDate(event.target.value));
   };
 
   const fetchAvailableRooms = async (startDate: string, endDate: string) => {
@@ -62,7 +68,10 @@ const SearchForm = () => {
       const availableRooms = allRooms.filter(
         (room: Room) => !overlappingRoomIds.includes(room.id)
       );
-      console.log("Available rooms:", availableRooms);
+      if (availableRooms.length === 0) {
+        throw new Error("No available rooms found.");
+      }
+      return availableRooms;
     } catch (error) {
       console.error("Failed to fetch available rooms:", error);
     }
@@ -71,10 +80,11 @@ const SearchForm = () => {
   const handleSearch = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    // Dispatch the fetchBookings action with the selected dates
-    // const bookingFetched = await dispatch(fetchBookings());
     const availableRooms = await fetchAvailableRooms(startDate, endDate);
-    console.log("availableRooms", availableRooms);
+    dispatch(setAvailableRooms(availableRooms));
+
+    // Redirect to the room selection page
+    navigate("/available-rooms");
   };
 
   return (
