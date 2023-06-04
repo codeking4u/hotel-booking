@@ -15,7 +15,7 @@ const RoomCard: React.FC<RoomCardProps> = ({ room, startDate, endDate }) => {
   const navigate = useNavigate();
 
   const handleBookNowClick = () => {
-    dispatch(setBookingDates(startDate, endDate));
+    dispatch(setBookingDates(startDate, endDate, room));
     const bookingUrl = `/booking?id=${encodeURIComponent(
       room.id
     )}&startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(
