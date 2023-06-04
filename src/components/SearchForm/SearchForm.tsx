@@ -68,7 +68,7 @@ const SearchForm = () => {
       const availableRooms = allRooms.filter(
         (room: Room) => !overlappingRoomIds.includes(room.id)
       );
-      if (availableRooms.length === 0) {
+      if (availableRooms?.length === 0) {
         throw new Error("No available rooms found.");
       }
       return availableRooms;
