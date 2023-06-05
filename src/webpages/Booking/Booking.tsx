@@ -38,7 +38,8 @@ const Booking: React.FC = () => {
   };
 
   const calculateTotalCost = () => {
-    let total = 0;
+    let total = calculateRoomCost();
+
     selectedProducts.forEach((productId) => {
       const selectedProduct = products.find(
         (product) => product.id === productId
@@ -47,7 +48,21 @@ const Booking: React.FC = () => {
         total += selectedProduct.priceNet;
       }
     });
+
     return total;
+  };
+
+  const calculateRoomCost = () => {
+    if (room && startDate && endDate) {
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+      const days = Math.ceil(
+        (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)
+      );
+      return room.pricePerNightNet * days;
+    }
+
+    return 0;
   };
 
   useEffect(() => {
@@ -87,6 +102,11 @@ const Booking: React.FC = () => {
           ))}
         </div>
       )}
+
+      <div>
+        <h3>Total Room Cost</h3>
+        <p>{calculateRoomCost()}</p>
+      </div>
 
       <div>
         <h3>Total Cost</h3>
