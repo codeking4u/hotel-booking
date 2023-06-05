@@ -1,7 +1,9 @@
-import React from "react";
-import { useSelector } from "react-redux";
+import React, { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { useLocation } from "react-router-dom";
 import { RootState } from "../../store";
+import { Product } from "../../store/types/productTypes";
+import { fetchProducts } from "../../store/actions/productActions";
 
 const Booking: React.FC = () => {
   const location = useLocation();
@@ -11,8 +13,14 @@ const Booking: React.FC = () => {
   const endDate = params.get("endDate");
 
   const room = useSelector((state: RootState) => state.bookingData.room);
+  const products = useSelector(
+    (state: RootState) => state.productsData.products
+  );
+  const dispatch = useDispatch();
 
-  // Fetch additional data or perform any necessary actions based on the URL parameters and room data
+  useEffect(() => {
+    dispatch(fetchProducts());
+  }, [dispatch]);
 
   return (
     <div>
@@ -20,15 +28,29 @@ const Booking: React.FC = () => {
       <p>Booking ID: {roomID}</p>
       <p>Start Date: {startDate}</p>
       <p>End Date: {endDate}</p>
+
       {room && (
         <div>
           <h3>Room Details</h3>
           <p>Room Name: {room.name}</p>
           <p>Room Price: {room.pricePerNightNet}</p>
-          {/* Display additional room details */}
         </div>
       )}
-      {/* Display additional booking details */}
+      {"products "}
+      {JSON.stringify(products)}
+      {products && (
+        <div>
+          <h3>Products</h3>
+          {products.map((product: Product) => (
+            <div key={product.id}>
+              <label>
+                <input type="checkbox" value={product.id} />
+                {product.name} - {product.priceNet}
+              </label>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
