@@ -1,7 +1,7 @@
 import React from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { setBookingDates } from "../../store/actions/bookingDataActions";
+import { setBookingData } from "../../store/actions/bookingDataActions";
 import { Room } from "../../store/types/roomTypes";
 
 interface RoomCardProps {
@@ -15,7 +15,7 @@ const RoomCard: React.FC<RoomCardProps> = ({ room, startDate, endDate }) => {
   const navigate = useNavigate();
 
   const handleBookNowClick = () => {
-    dispatch(setBookingDates(startDate, endDate, room));
+    dispatch(setBookingData(startDate, endDate, room, []));
     const bookingUrl = `/booking?id=${encodeURIComponent(
       room.id
     )}&startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(

@@ -1,8 +1,9 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useLocation } from "react-router-dom";
 import { RootState } from "../../store";
 import { Product } from "../../store/types/productTypes";
+import { setBookingData } from "../../store/actions/bookingDataActions";
 import { fetchProducts } from "../../store/actions/productActions";
 
 const Booking: React.FC = () => {
@@ -16,7 +17,38 @@ const Booking: React.FC = () => {
   const products = useSelector(
     (state: RootState) => state.productsData.products
   );
+
   const dispatch = useDispatch();
+  const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
+
+  const isSelected = (productId: string) => {
+    return selectedProducts.includes(productId);
+  };
+
+  const handleCheckboxChange = (productId: string) => {
+    if (isSelected(productId)) {
+      setSelectedProducts((prevSelected) =>
+        prevSelected.filter((id) => id !== productId)
+      );
+    } else {
+      setSelectedProducts((prevSelected) => [...prevSelected, productId]);
+    }
+
+    dispatch(setBookingData(startDate, endDate, room, selectedProducts));
+  };
+
+  const calculateTotalCost = () => {
+    let total = 0;
+    selectedProducts.forEach((productId) => {
+      const selectedProduct = products.find(
+        (product) => product.id === productId
+      );
+      if (selectedProduct) {
+        total += selectedProduct.priceNet;
+      }
+    });
+    return total;
+  };
 
   useEffect(() => {
     dispatch(fetchProducts());
@@ -36,21 +68,30 @@ const Booking: React.FC = () => {
           <p>Room Price: {room.pricePerNightNet}</p>
         </div>
       )}
-      {"products "}
-      {JSON.stringify(products)}
+
       {products && (
         <div>
           <h3>Products</h3>
           {products.map((product: Product) => (
             <div key={product.id}>
               <label>
-                <input type="checkbox" value={product.id} />
+                <input
+                  type="checkbox"
+                  value={product.id}
+                  checked={isSelected(product.id)}
+                  onChange={() => handleCheckboxChange(product.id)}
+                />
                 {product.name} - {product.priceNet}
               </label>
             </div>
           ))}
         </div>
       )}
+
+      <div>
+        <h3>Total Cost</h3>
+        <p>{calculateTotalCost()}</p>
+      </div>
     </div>
   );
 };
